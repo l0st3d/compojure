@@ -69,7 +69,12 @@
   "Construct a Jetty Server instance."
   [options servlets]
   (let [port     (options :port 80)
-        server   (Server. port)
+        host     (options :host "0.0.0.0")
+        connector (doto (org.mortbay.jetty.bio.SocketConnector.)
+                    (.setPort port)
+                    (.setHost host))
+        server   (doto (Server.)
+                   (.addConnector connector))
         servlets (partition 2 servlets)]
     (when (or (options :ssl) (options :ssl-port))
       (add-ssl-connector! server options))
